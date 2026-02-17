@@ -109,3 +109,40 @@ final class FlipRound {
     private final String playerId;
     private final BigDecimal wagerEth;
     private final FlipOutcome choice;
+    private final FlipOutcome outcome;
+    private final boolean won;
+    private final BigDecimal payoutEth;
+    private final long resolvedAtMs;
+
+    FlipRound(long roundId, String playerId, BigDecimal wagerEth, FlipOutcome choice,
+              FlipOutcome outcome, boolean won, BigDecimal payoutEth, long resolvedAtMs) {
+        this.roundId = roundId;
+        this.playerId = playerId;
+        this.wagerEth = wagerEth;
+        this.choice = choice;
+        this.outcome = outcome;
+        this.won = won;
+        this.payoutEth = payoutEth;
+        this.resolvedAtMs = resolvedAtMs;
+    }
+
+    public long getRoundId() { return roundId; }
+    public String getPlayerId() { return playerId; }
+    public BigDecimal getWagerEth() { return wagerEth; }
+    public FlipOutcome getChoice() { return choice; }
+    public FlipOutcome getOutcome() { return outcome; }
+    public boolean isWon() { return won; }
+    public BigDecimal getPayoutEth() { return payoutEth; }
+    public long getResolvedAtMs() { return resolvedAtMs; }
+
+    @Override
+    public String toString() {
+        return String.format("FlipRound{id=%d, player=%s, wager=%s, choice=%s, outcome=%s, won=%s, payout=%s}",
+                roundId, playerId, wagerEth, choice.getLabel(), outcome.getLabel(), won, payoutEth);
+    }
+}
+
+// ==================== Player profile ====================
+
+final class PlayerProfile {
+    private final String id;
