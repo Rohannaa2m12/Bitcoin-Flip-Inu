@@ -220,3 +220,40 @@ final class PlayerProfile {
             recentRounds.add(r);
             while (recentRounds.size() > BFIConstants.MAX_HISTORY_PER_PLAYER) {
                 recentRounds.remove(0);
+            }
+        }
+    }
+
+    public List<FlipRound> getRecentRounds() {
+        synchronized (recentRounds) {
+            return new ArrayList<>(recentRounds);
+        }
+    }
+}
+
+// ==================== Entropy (simulated on-chain) ====================
+
+final class FlipEntropy {
+    private final MessageDigest digest;
+    private final long roundId;
+    private final String playerId;
+    private final long timestampMs;
+    private final String domainSeed;
+
+    FlipEntropy(long roundId, String playerId, long timestampMs) {
+        try {
+            this.digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 required", e);
+        }
+        this.roundId = roundId;
+        this.playerId = playerId;
+        this.timestampMs = timestampMs;
+        this.domainSeed = BFIConstants.DOMAIN_SEED;
+    }
+
+    FlipOutcome resolve() {
+        byte[] input = (roundId + "|" + playerId + "|" + timestampMs + "|" + domainSeed + "|" + System.nanoTime()).getBytes();
+        byte[] hash = digest.digest(input);
+        int lsb = hash[hash.length - 1] & 1;
+        return FlipOutcome.fromCode(lsb);
