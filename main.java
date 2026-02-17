@@ -183,3 +183,40 @@ final class PlayerProfile {
     public long getMaxLossStreak() { return maxLossStreak.get(); }
     public BigDecimal getTotalWageredEth() { return totalWageredEth; }
     public BigDecimal getTotalPayoutEth() { return totalPayoutEth; }
+    public long getLastFlipMs() { return lastFlipMs; }
+
+    public BigDecimal getNetProfitEth() {
+        return totalPayoutEth.subtract(totalWageredEth);
+    }
+
+    public double getWinRate() {
+        long flips = totalFlips.get();
+        if (flips == 0) return 0.0;
+        return (double) totalWins.get() / flips * 100.0;
+    }
+
+    void recordWin(BigDecimal wager, BigDecimal payout) {
+        totalFlips.incrementAndGet();
+        totalWins.incrementAndGet();
+        currentWinStreak.incrementAndGet();
+        currentLossStreak.set(0);
+        maxWinStreak.updateAndGet(x -> Math.max(x, currentWinStreak.get()));
+        totalWageredEth = totalWageredEth.add(wager);
+        totalPayoutEth = totalPayoutEth.add(payout);
+        lastFlipMs = System.currentTimeMillis();
+    }
+
+    void recordLoss(BigDecimal wager) {
+        totalFlips.incrementAndGet();
+        currentWinStreak.set(0);
+        currentLossStreak.incrementAndGet();
+        maxLossStreak.updateAndGet(x -> Math.max(x, currentLossStreak.get()));
+        totalWageredEth = totalWageredEth.add(wager);
+        lastFlipMs = System.currentTimeMillis();
+    }
+
+    void addRecentRound(FlipRound r) {
+        synchronized (recentRounds) {
+            recentRounds.add(r);
+            while (recentRounds.size() > BFIConstants.MAX_HISTORY_PER_PLAYER) {
+                recentRounds.remove(0);
