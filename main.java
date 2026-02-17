@@ -72,3 +72,40 @@ enum GameTier {
             if (eth.compareTo(t.minEth) >= 0 && eth.compareTo(t.maxEth) < 0) return t;
         }
         return SATOSHI;
+    }
+}
+
+enum StreakType {
+    NONE(0),
+    WIN_STREAK(1),
+    LOSS_STREAK(2);
+
+    private final int id;
+
+    StreakType(int id) { this.id = id; }
+    public int getId() { return id; }
+}
+
+// ==================== Constants ====================
+
+final class BFIConstants {
+    static final int HOUSE_EDGE_BPS = 250;
+    static final int BPS_DENOM = 10000;
+    static final int WIN_MULTIPLIER_BPS = 9750;
+    static final BigDecimal MIN_BET_ETH = new BigDecimal("0.01");
+    static final BigDecimal MAX_BET_ETH = new BigDecimal("10");
+    static final String DOMAIN_SEED = "BitcoinFlipInu.Satoshi.v1";
+    static final int MAX_LEADERBOARD_SIZE = 100;
+    static final int MAX_HISTORY_PER_PLAYER = 500;
+    static final int SATOSHI_DECIMALS = 18;
+
+    private BFIConstants() {}
+}
+
+// ==================== Flip round model ====================
+
+final class FlipRound {
+    private final long roundId;
+    private final String playerId;
+    private final BigDecimal wagerEth;
+    private final FlipOutcome choice;
